@@ -19,6 +19,8 @@ public class Maze{
 	private boolean animate;
 	private ArrayList<BufferedImage> frames;
 
+	private final int CELL_SIZE = 5;
+
 	public Maze(int width, int height, boolean animate){
 		this.width = width;
 		this.height = height;
@@ -145,27 +147,36 @@ public class Maze{
 	}
 
 	public ArrayList<BufferedImage> renderGif(){
-		log("rendering gif");
+		frames.add(renderPng());
 		return frames;
 	}
 
 	public BufferedImage renderPng(){
-		log("rendering png");
-		return render(BufferedImage.TYPE_INT_ARGB);
+		return render(BufferedImage.TYPE_INT_ARGB, null);
 	}
 
 	// create an image out of the maze grid
-	private BufferedImage render(int type){
-		BufferedImage image = new BufferedImage(renderWidth, renderHeight, type);
+	private BufferedImage render(int type, Cell current){
+		BufferedImage image = new BufferedImage(renderWidth * CELL_SIZE, renderHeight * CELL_SIZE, type);
 
 		int white = new Color(255, 255, 255).getRGB();
 		int black = new Color(0, 0, 0).getRGB();
+		int red = new Color(255, 0, 0).getRGB();
 
-		for(int x = 0; x < renderWidth; x++) {
-		    for(int y = 0; y < renderHeight; y++) {
-		    	int color = grid[x][y].visited() ? white : black;
+		for(int x = 0; x < renderWidth * CELL_SIZE; x++) {
+		    for(int y = 0; y < renderHeight * CELL_SIZE; y++) {
+		    	int color = grid[x / CELL_SIZE][y / CELL_SIZE].visited() ? white : black;
 		    	image.setRGB(x, y, color);
 		    }
+		}
+
+		// color current node
+		if(current != null){
+			for(int i=0; i<CELL_SIZE; i++){
+				for(int j=0; j<CELL_SIZE; j++){
+					image.setRGB((current.x() * CELL_SIZE + i), (current.y() * CELL_SIZE + j), red);
+				}
+			}
 		}
 
 		return image;
@@ -210,9 +221,7 @@ public class Maze{
 	}
 
 	private void addFrame(Cell current){
-		BufferedImage image = render(BufferedImage.TYPE_INT_ARGB);
-		int red = new Color(255, 0, 0).getRGB();
-		image.setRGB(current.x(), current.y(), red);
+		BufferedImage image = render(BufferedImage.TYPE_INT_ARGB, current);
 		frames.add(image);
 	}
 

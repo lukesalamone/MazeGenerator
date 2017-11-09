@@ -16,10 +16,12 @@ public class Generator{
 		
 		// create gif
 		ArrayList<BufferedImage> image = maze.renderGif();
+		System.out.println("rendering gif");
 		saveGif(image);
 
 		// save final output
 		BufferedImage png = maze.renderPng();
+		System.out.println("rendering png");
 		saveImage(png);
 	}
 
